@@ -18,8 +18,26 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.11"
+      - name: Restore bot data
+        uses: actions/cache/restore@v4
+        with:
+          path: |
+            forwards.json
+            login.json
+            .env
+          key: r3e-data-${{ github.run_id }}
+          restore-keys: r3e-data
       - run: pip install -r requirements.txt
       - run: python bot.py
         env:
           TOKEN: ${{ secrets.DISCORD_TOKEN }}
           USER_TOKEN: ${{ secrets.USER_TOKEN }}
+      - name: Save bot data
+        if: always()
+        uses: actions/cache/save@v4
+        with:
+          path: |
+            forwards.json
+            login.json
+            .env
+          key: r3e-data-${{ github.run_id }}
